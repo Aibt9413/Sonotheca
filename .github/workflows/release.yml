@@ -22,6 +22,7 @@ jobs:
           files: |
             release/Sonotheca-1.0.19-release.apk
             release/Sonotheca-1.0.19-source.zip
+            docs/icon.png
           draft: false
           prerelease: false
           fail_on_unmatched_files: true
