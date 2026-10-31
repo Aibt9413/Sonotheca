@@ -1,0 +1,27 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body_path: release/README.md
+          files: |
+            release/Sonotheca-1.0.19-release.apk
+            release/Sonotheca-1.0.19-source.zip
+          draft: false
+          prerelease: false
+          fail_on_unmatched_files: true
