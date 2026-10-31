@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "M0 基础能力：只授予 core，不授予 fs / http / shell / dialog 等任何插件权限。文件与网络的全部 IO 都在 Rust 侧完成，前端拿不到系统能力。",
+  "windows": ["main"],
+  "permissions": ["core:default", "core:app:default", "core:event:default"]
+}

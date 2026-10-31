@@ -1,0 +1,40 @@
+[package]
+name = "sonotheca"
+version = "1.0.19"
+description = "Sonotheca — 多源音频抓取、本地处理与归档"
+authors = ["Sonotheca"]
+edition = "2021"
+rust-version = "1.77.2"
+
+# Android 需要 staticlib；cdylib 供桌面动态加载；rlib 供集成测试引用
+[lib]
+name = "sonotheca_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["protocol-asset"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+rusqlite = { version = "0.32", features = ["bundled"] }
+uuid = { version = "1", features = ["v4", "serde"] }
+
+# M1 新增
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "stream", "blocking"] }
+tokio = { version = "1", features = ["fs", "io-util", "sync", "time", "rt", "macros"] }
+futures-util = "0.3"
+lofty = "0.21"
+ncm-api-rs = "0.1.0"
+async-trait = "0.1"
+ncmdump = "0.8.0"
+base64 = "0.22"
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "abort"
+strip = true

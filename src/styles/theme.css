@@ -1,0 +1,460 @@
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Sonotheca · Material 3 主题
+   ───────────────────────────────────────────────────────────────────────
+   规则 1（禁直角）：--radius-* 命名空间被清空，只留 card = 24px / pill = 999px。
+                     写 rounded-lg / rounded-md 不会生成任何 CSS —— 硬约束，
+                     不靠 code review 靠编译器。
+   规则 2（运行时可换肤）：颜色只走 --md-* 令牌；stores/theme.ts 把用户种子色
+                     算成两套 scheme 注入 #md-dynamic，覆盖下方静态兜底值。
+   规则 3（深色）：由 [data-theme="dark"] 驱动，JS 负责把 system 解析成具体值，
+                     因此不依赖 prefers-color-scheme 媒体查询。
+   ═══════════════════════════════════════════════════════════════════════ */
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* ── ① 圆角：清空默认刻度，只保留两档 ───────────────────────────────── */
+@theme {
+  --radius-*: initial;
+  --radius-card: 24px;
+  --radius-pill: 999px;
+}
+
+/* ── ② 静态兜底令牌（种子色 #2BD4B4 预计算） ─────────────────────────── */
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+
+  --md-primary: #006a67;
+  --md-on-primary: #ffffff;
+  --md-primary-container: #9cf1ec;
+  --md-on-primary-container: #00201f;
+  --md-secondary: #4a6361;
+  --md-on-secondary: #ffffff;
+  --md-secondary-container: #cce8e5;
+  --md-on-secondary-container: #05201e;
+  --md-tertiary: #4b607c;
+  --md-on-tertiary: #ffffff;
+  --md-tertiary-container: #d3e4ff;
+  --md-on-tertiary-container: #041c35;
+  --md-error: #ba1a1a;
+  --md-on-error: #ffffff;
+  --md-error-container: #ffdad6;
+  --md-on-error-container: #410002;
+
+  /* 警示色：音质降级等「需要提醒但不阻断」的 Toast */
+  --md-warning: #6b4e00;
+  --md-on-warning: #ffffff;
+  --md-warning-container: #ffdf9a;
+  --md-on-warning-container: #221a00;
+
+  --md-surface: #f5fbfa;
+  --md-surface-dim: #d5dbda;
+  --md-surface-bright: #f5fbfa;
+  --md-surface-container-lowest: #ffffff;
+  --md-surface-container-low: #eff5f4;
+  --md-surface-container: #e9efee;
+  --md-surface-container-high: #e3e9e8;
+  --md-surface-container-highest: #dde3e3;
+  --md-on-surface: #171d1d;
+  --md-on-surface-variant: #3f4948;
+  --md-outline: #6f7979;
+  --md-outline-variant: #bec9c8;
+  --md-inverse-surface: #2b3231;
+  --md-inverse-on-surface: #ecf2f1;
+  --md-inverse-primary: #80d5d2;
+
+  --md-elev-1: 0 1px 2px rgb(0 0 0 / 0.3), 0 1px 3px 1px rgb(0 0 0 / 0.15);
+  --md-elev-2: 0 1px 2px rgb(0 0 0 / 0.3), 0 2px 6px 2px rgb(0 0 0 / 0.15);
+  --md-elev-3: 0 1px 3px rgb(0 0 0 / 0.3), 0 4px 8px 3px rgb(0 0 0 / 0.15);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --md-primary: #80d5d2;
+  --md-on-primary: #003735;
+  --md-primary-container: #004f4d;
+  --md-on-primary-container: #9cf1ec;
+  --md-secondary: #b1ccca;
+  --md-on-secondary: #1c3533;
+  --md-secondary-container: #334b4a;
+  --md-on-secondary-container: #cce8e5;
+  --md-tertiary: #b3c8e8;
+  --md-on-tertiary: #1c314b;
+  --md-tertiary-container: #334863;
+  --md-on-tertiary-container: #d3e4ff;
+  --md-error: #ffb4ab;
+  --md-on-error: #690005;
+  --md-error-container: #93000a;
+  --md-on-error-container: #ffdad6;
+
+  --md-warning: #e6c34a;
+  --md-on-warning: #3a2d00;
+  --md-warning-container: #574500;
+  --md-on-warning-container: #ffdf9a;
+
+  --md-surface: #0e1514;
+  --md-surface-dim: #0e1514;
+  --md-surface-bright: #343a3a;
+  --md-surface-container-lowest: #090f0f;
+  --md-surface-container-low: #171d1d;
+  --md-surface-container: #1b2121;
+  --md-surface-container-high: #252b2b;
+  --md-surface-container-highest: #303636;
+  --md-on-surface: #dde4e3;
+  --md-on-surface-variant: #bec9c8;
+  --md-outline: #889392;
+  --md-outline-variant: #3f4948;
+  --md-inverse-surface: #dde4e3;
+  --md-inverse-on-surface: #2b3231;
+  --md-inverse-primary: #006a67;
+
+  --md-elev-1: 0 1px 2px rgb(0 0 0 / 0.6), 0 1px 3px 1px rgb(0 0 0 / 0.3);
+  --md-elev-2: 0 1px 2px rgb(0 0 0 / 0.6), 0 2px 6px 2px rgb(0 0 0 / 0.3);
+  --md-elev-3: 0 1px 3px rgb(0 0 0 / 0.6), 0 4px 8px 3px rgb(0 0 0 / 0.3);
+}
+
+/* ── ③ 液态玻璃令牌（全局柔光开关统一控制） ─────────────────────────── */
+:root {
+  /* 不支持 color-mix 的 WebView 先用实色兜底 */
+  --glass-bg: var(--md-surface-container-high);
+  --glass-bg-strong: var(--md-surface-container-high);
+  --glass-border: var(--md-outline-variant);
+  --glass-inverse-bg: var(--md-inverse-surface);
+  --glass-warning-bg: var(--md-warning-container);
+  --glass-blur: 24px;
+  --glass-card-blur: 18px;
+  --card-glass-alpha: 58%;
+  --card-glass-low-alpha: 54%;
+  --card-glass-high-alpha: 64%;
+  --card-glass-border: rgba(0, 0, 0, 0.06);
+
+  --glass-bg: color-mix(in srgb, var(--md-surface-container-high) 60%, transparent);
+  --glass-bg-strong: color-mix(in srgb, var(--md-surface-container-high) 82%, transparent);
+  --glass-border: color-mix(in srgb, var(--md-outline-variant) 50%, transparent);
+  --glass-inverse-bg: color-mix(in srgb, var(--md-inverse-surface) 86%, transparent);
+  --glass-warning-bg: color-mix(in srgb, var(--md-warning-container) 88%, transparent);
+  /* 卡片：深色降到 ~40% 的黑面，壁纸能真正透出来 */
+  --card-glass-bg: color-mix(
+    in srgb,
+    var(--md-surface-container) var(--card-glass-alpha),
+    transparent
+  );
+  --card-glass-low-bg: color-mix(
+    in srgb,
+    var(--md-surface-container-low) var(--card-glass-low-alpha),
+    transparent
+  );
+  --card-glass-high-bg: color-mix(
+    in srgb,
+    var(--md-surface-container-high) var(--card-glass-high-alpha),
+    transparent
+  );
+}
+
+[data-theme="dark"] {
+  --card-glass-alpha: 42%;
+  --card-glass-low-alpha: 38%;
+  --card-glass-high-alpha: 48%;
+  --card-glass-border: rgba(255, 255, 255, 0.12);
+  /* 直接覆盖计算后的颜色，避免个别 WebView 对嵌套 var 的解析差异 */
+  --card-glass-bg: color-mix(in srgb, var(--md-surface-container) 42%, transparent);
+  --card-glass-low-bg: color-mix(in srgb, var(--md-surface-container-low) 38%, transparent);
+  --card-glass-high-bg: color-mix(in srgb, var(--md-surface-container-high) 48%, transparent);
+}
+
+/* 关闭“全局柔光”：退化为实色面板，不再申请模糊合成层 */
+[data-glass="off"] {
+  --glass-bg: var(--md-surface-container-high);
+  --glass-bg-strong: var(--md-surface-container-high);
+  --glass-border: var(--md-outline-variant);
+  --glass-inverse-bg: var(--md-inverse-surface);
+  --glass-warning-bg: var(--md-warning-container);
+  --glass-blur: 0px;
+  --glass-card-blur: 0px;
+  --card-glass-bg: var(--md-surface-container);
+  --card-glass-low-bg: var(--md-surface-container-low);
+  --card-glass-high-bg: var(--md-surface-container-high);
+  --card-glass-border: var(--md-outline-variant);
+}
+
+/* ── ③ 令牌 → utility（inline 才会输出 var()，否则会被静态求值） ──────── */
+@theme inline {
+  --color-primary: var(--md-primary);
+  --color-on-primary: var(--md-on-primary);
+  --color-primary-container: var(--md-primary-container);
+  --color-on-primary-container: var(--md-on-primary-container);
+  --color-secondary: var(--md-secondary);
+  --color-on-secondary: var(--md-on-secondary);
+  --color-secondary-container: var(--md-secondary-container);
+  --color-on-secondary-container: var(--md-on-secondary-container);
+  --color-tertiary: var(--md-tertiary);
+  --color-error: var(--md-error);
+  --color-error-container: var(--md-error-container);
+  --color-on-error-container: var(--md-on-error-container);
+  --color-warning: var(--md-warning);
+  --color-on-warning: var(--md-on-warning);
+  --color-warning-container: var(--md-warning-container);
+  --color-on-warning-container: var(--md-on-warning-container);
+
+  --color-surface: var(--md-surface);
+  --color-surface-dim: var(--md-surface-dim);
+  --color-surface-lowest: var(--md-surface-container-lowest);
+  --color-surface-low: var(--md-surface-container-low);
+  --color-surface-container: var(--md-surface-container);
+  --color-surface-high: var(--md-surface-container-high);
+  --color-surface-highest: var(--md-surface-container-highest);
+  --color-on-surface: var(--md-on-surface);
+  --color-on-surface-variant: var(--md-on-surface-variant);
+
+  --color-outline: var(--md-outline);
+  --color-outline-variant: var(--md-outline-variant);
+  --color-inverse-surface: var(--md-inverse-surface);
+  --color-inverse-on-surface: var(--md-inverse-on-surface);
+  --color-inverse-primary: var(--md-inverse-primary);
+
+  --shadow-e1: var(--md-elev-1);
+  --shadow-e2: var(--md-elev-2);
+  --shadow-e3: var(--md-elev-3);
+}
+
+/* ── ④ 安全区工具类（Android 手势条 / iOS Home Indicator） ───────────── */
+@utility pt-safe {
+  padding-top: max(env(safe-area-inset-top), 0.75rem);
+}
+
+/* 列表卡片：禁止文字选择与长按系统菜单（复制/分享/朗读）抢手势 */
+@utility no-select {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+@utility pb-safe {
+  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+}
+/* 给"悬浮底栏 + 迷你播放器"预留滚动空间，避免最后一张卡片被盖住 */
+@utility pb-nav {
+  padding-bottom: calc(env(safe-area-inset-bottom) + 7.5rem);
+}
+
+/* ── ④ 液态玻璃：不同层级的同一种质感 ─────────────────────────────────── */
+@utility glass {
+  background-color: var(--glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+}
+
+@utility glass-strong {
+  background-color: var(--glass-bg-strong);
+  -webkit-backdrop-filter: blur(calc(var(--glass-blur) + 8px)) saturate(165%);
+  backdrop-filter: blur(calc(var(--glass-blur) + 8px)) saturate(165%);
+}
+
+@utility glass-inverse {
+  background-color: var(--glass-inverse-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+}
+
+@utility glass-warning {
+  background-color: var(--glass-warning-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+}
+
+/* 底部 Sheet：比普通玻璃更厚，顶部一条极细高光边 */
+@utility glass-sheet {
+  background-color: var(--glass-bg-strong);
+  -webkit-backdrop-filter: blur(calc(var(--glass-blur) + 10px)) saturate(170%);
+  backdrop-filter: blur(calc(var(--glass-blur) + 10px)) saturate(170%);
+  border-top: 1px solid var(--glass-border);
+}
+
+@utility glass-edge {
+  border: 1px solid var(--glass-border);
+}
+
+/* 全局卡片：半透明主题面 + 背景模糊；浅色偏白、深色偏黑 */
+@utility glass-card {
+  background-color: var(--card-glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-card-blur)) saturate(150%);
+  backdrop-filter: blur(var(--glass-card-blur)) saturate(150%);
+  border: 1px solid var(--card-glass-border);
+}
+
+@utility glass-card-low {
+  background-color: var(--card-glass-low-bg);
+  -webkit-backdrop-filter: blur(var(--glass-card-blur)) saturate(150%);
+  backdrop-filter: blur(var(--glass-card-blur)) saturate(150%);
+  border: 1px solid var(--card-glass-border);
+}
+
+@utility glass-card-high {
+  background-color: var(--card-glass-high-bg);
+  -webkit-backdrop-filter: blur(var(--glass-card-blur)) saturate(150%);
+  backdrop-filter: blur(var(--glass-card-blur)) saturate(150%);
+  border: 1px solid var(--card-glass-border);
+}
+
+/* 壁纸层：data URL 由 theme store 写到 :root 的 --app-wallpaper */
+@utility app-wallpaper {
+  background-image: var(--app-wallpaper, none);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+/* ── ⑤ 基础层 ────────────────────────────────────────────────────────── */
+@layer base {
+  html,
+  body,
+  #app {
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--md-surface);
+    color: var(--md-on-surface);
+    font-size: 15px;
+    line-height: 1.55;
+    font-family:
+      ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Noto Sans SC",
+      "PingFang SC", "Microsoft YaHei", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overscroll-behavior: none;
+  }
+
+  /* 禁直角兜底：原生控件默认是方的 */
+  button,
+  input,
+  select,
+  textarea,
+  img {
+    border-radius: inherit;
+  }
+
+  ::selection {
+    background: var(--md-primary-container);
+    color: var(--md-on-primary-container);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--md-primary);
+    outline-offset: 2px;
+    border-radius: inherit;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--md-outline-variant);
+    border: 3px solid transparent;
+    border-radius: 999px;
+    background-clip: content-box;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* ── 全局手势封印：禁止文字选择、长按系统菜单、点击高亮 ───────────── */
+* {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -webkit-touch-callout: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+/* 输入框必须放行，否则无法选中/粘贴 */
+input,
+textarea,
+[contenteditable="true"] {
+  user-select: text !important;
+  -webkit-user-select: text !important;
+}
+
+/* ── ⑥ 页面转场：前进右进、返回右退（Android 原生方向） ─────────────── */
+@layer components {
+  .page-forward-enter-active,
+  .page-back-enter-active {
+    transition:
+      opacity 220ms cubic-bezier(0.2, 0, 0, 1),
+      transform 260ms cubic-bezier(0.2, 0, 0, 1);
+    will-change: opacity, transform;
+  }
+
+  .page-forward-leave-active,
+  .page-back-leave-active {
+    transition:
+      opacity 150ms cubic-bezier(0.2, 0, 0, 1),
+      transform 180ms cubic-bezier(0.2, 0, 0, 1);
+    will-change: opacity, transform;
+  }
+
+  .page-forward-enter-from {
+    opacity: 0;
+    transform: translate3d(18px, 0, 0);
+  }
+
+  .page-forward-leave-to {
+    opacity: 0;
+    transform: translate3d(-14px, 0, 0);
+  }
+
+  .page-back-enter-from {
+    opacity: 0;
+    transform: translate3d(-18px, 0, 0);
+  }
+
+  .page-back-leave-to {
+    opacity: 0;
+    transform: translate3d(14px, 0, 0);
+  }
+}
+
+/* ── ⑦ 按压反馈：所有按钮 / 链接 / 列表卡片统一微缩放 ───────────────── */
+@layer base {
+  button:not(:disabled),
+  a,
+  [data-press] {
+    transition:
+      scale 180ms cubic-bezier(0.2, 0, 0, 1),
+      background-color 180ms cubic-bezier(0.2, 0, 0, 1),
+      color 180ms cubic-bezier(0.2, 0, 0, 1),
+      border-color 180ms cubic-bezier(0.2, 0, 0, 1),
+      opacity 180ms cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  button:not(:disabled):active,
+  a:active,
+  [data-press]:active {
+    scale: 0.95;
+  }
+}
+
+/* ── ⑧ 全局动效开关：关闭后所有动画 / 过渡立即完成 ─────────────────── */
+[data-motion="off"] *,
+[data-motion="off"] *::before,
+[data-motion="off"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-delay: 0ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  transition-delay: 0ms !important;
+  scroll-behavior: auto !important;
+}
